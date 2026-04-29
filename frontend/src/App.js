@@ -7,7 +7,6 @@ function App() {
   const [file, setFile] = useState(null);
 
   const API_URL = process.env.REACT_APP_API_URL;
-  const CDN_URL = process.env.REACT_APP_CDN_URL;   // ✅ ADD THIS
 
   const fetchFiles = async () => {
     const res = await axios.get(`${API_URL}/api/files`);
@@ -53,12 +52,8 @@ function App() {
           files.map((f) => (
             <div key={f.id} className="file-item">
 
-              {/* ✅ USE CLOUDFRONT HERE */}
-              <a
-                href={`${CDN_URL}/${f.url}`}
-                target="_blank"
-                rel="noreferrer"
-              >
+              {/* ✅ DIRECT S3 URL */}
+              <a href={f.url} target="_blank" rel="noreferrer">
                 📄 {f.name}
               </a>
 
