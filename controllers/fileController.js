@@ -1,4 +1,4 @@
-const pool = require("../config/db");
+const db = require("../config/db");
 const redis = require("../config/redis");
 
 const { PutObjectCommand, DeleteObjectCommand } = require("@aws-sdk/client-s3");
@@ -14,25 +14,27 @@ exports.uploadFile = async (req, res) => {
       return res.status(400).json({ message: "No file uploaded" });
     }
 
-    // 🔥 unique filename
-    const key = `uploads/${Date.now()}-${file.originalname}`;
+    // 🔥 clean filename
+    const cleanName = file.originalname.replace(/\s+/g, "_");
+
+    const key = `uploads/${Date.now()}-${cleanName}`;
 
     // upload to S3
     await s3.send(
       new PutObjectCommand({
-        Bucket: process.env.S3_BUCKET,   // ✅ FIXED
+        Bucket: process.env.S3_BUCKET,
         Key: key,
         Body: file.buffer,
-        ContentType: file.mimetype,
+        ContentType: file.mimetype || "application/octet-stream",
       })
     );
 
     console.log("Uploaded to S3:", key);
 
-    // ✅ build URL using env
-    const fileUrl = key;
+    // ✅ FULL S3 URL (IMPORTANT FIX)
+    const fileUrl = `https://${process.env.S3_BUCKET}.s3.${process.env.AWS_REGION}.amazonaws.com/${key}`;
 
-    const result = await pool.query(
+    const result = await db.query(
       "INSERT INTO files(name, url) VALUES($1,$2) RETURNING *",
       [file.originalname, fileUrl]
     );
@@ -49,20 +51,19 @@ exports.uploadFile = async (req, res) => {
 };
 
 
-
-// 📥 Get Files (with Redis cache)
+// 📥 Get Files (Redis + DB)
 exports.getFiles = async (req, res) => {
   try {
     const cached = await redis.get("files");
 
     if (cached) {
-      console.log("Serving from Redis ⚡");
+      console.log("⚡ Redis hit");
       return res.json(JSON.parse(cached));
     }
 
-    console.log("Serving from DB 🐢");
+    console.log("🐢 DB hit");
 
-    const result = await pool.query("SELECT * FROM files ORDER BY id DESC");
+    const result = await db.query("SELECT * FROM files ORDER BY id DESC");
 
     await redis.set("files", JSON.stringify(result.rows), "EX", 60);
 
@@ -75,13 +76,12 @@ exports.getFiles = async (req, res) => {
 };
 
 
-
 // 🗑️ Delete File → S3
 exports.deleteFile = async (req, res) => {
   try {
     const { id } = req.params;
 
-    const result = await pool.query(
+    const result = await db.query(
       "SELECT * FROM files WHERE id=$1",
       [id]
     );
@@ -92,13 +92,13 @@ exports.deleteFile = async (req, res) => {
 
     const file = result.rows[0];
 
-    // 🔥 extract key from URL
-    const key = file.url;
+    // 🔥 extract key from FULL URL
+    const key = file.url.split(".amazonaws.com/")[1];
 
     // delete from S3
     await s3.send(
       new DeleteObjectCommand({
-        Bucket: process.env.S3_BUCKET,   // ✅ FIXED
+        Bucket: process.env.S3_BUCKET,
         Key: key,
       })
     );
@@ -106,12 +106,12 @@ exports.deleteFile = async (req, res) => {
     console.log("Deleted from S3:", key);
 
     // delete from DB
-    await pool.query("DELETE FROM files WHERE id=$1", [id]);
+    await db.query("DELETE FROM files WHERE id=$1", [id]);
 
     // clear cache
     await redis.del("files");
 
-    res.json({ message: "File deleted successfully" });
+    res.json({ message: "Deleted successfully" });
 
   } catch (err) {
     console.error("Delete error:", err);
@@ -120,8 +120,7 @@ exports.deleteFile = async (req, res) => {
 };
 
 
-
-// 📊 Track Download (optional)
+// 📊 Track Download
 exports.trackDownload = async (req, res) => {
   try {
     const { id } = req.params;
