@@ -30,14 +30,20 @@ function App() {
     fetchFiles();
   };
 
+const downloadFile = async (id) => {
+  const res = await axios.get(`${API_URL}/api/download/${id}`);
+  window.open(res.data.url, "_blank");
+};
+
   useEffect(() => {
     fetchFiles();
   }, []);
 
   return (
     <div className="container">
-      <h1>📁 File Manager</h1>
+      <h1>📁 Cloud File Manager</h1>
 
+      {/* Upload Section */}
       <div className="upload-box">
         <input type="file" onChange={(e) => setFile(e.target.files[0])} />
         <button className="btn primary" onClick={upload}>
@@ -45,25 +51,30 @@ function App() {
         </button>
       </div>
 
+      {/* File List */}
       <div className="file-list">
         {files.length === 0 ? (
           <p className="empty">No files uploaded</p>
         ) : (
           files.map((f) => (
             <div key={f.id} className="file-item">
+              <span className="file-name">📄 {f.name}</span>
 
-              {/* ✅ DIRECT S3 URL */}
-              <a href={f.url} target="_blank" rel="noreferrer">
-                📄 {f.name}
-              </a>
+              <div className="actions">
+                <button
+                  className="btn download"
+                  onClick={() => downloadFile(f.id)}
+                >
+                  Download
+                </button>
 
-              <button
-                className="btn danger"
-                onClick={() => deleteFile(f.id)}
-              >
-                Delete
-              </button>
-
+                <button
+                  className="btn danger"
+                  onClick={() => deleteFile(f.id)}
+                >
+                  Delete
+                </button>
+              </div>
             </div>
           ))
         )}

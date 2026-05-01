@@ -1,29 +1,75 @@
 body {
   margin: 0;
-  font-family: Arial, sans-serif;
-  background: #f4f6f8;
+  font-family: "Segoe UI", sans-serif;
+  background: #f4f6f9;
 }
 
 .container {
-  max-width: 600px;
+  max-width: 900px;
   margin: 50px auto;
-  background: white;
+  background: #ffffff;
   padding: 30px;
-  border-radius: 10px;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+  border-radius: 12px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
 }
 
 h1 {
   text-align: center;
-  margin-bottom: 20px;
+  margin-bottom: 30px;
+  color: #333;
 }
 
+/* Upload Section */
 .upload-box {
   display: flex;
   gap: 10px;
-  margin-bottom: 20px;
+  margin-bottom: 25px;
 }
 
+.upload-box input {
+  flex: 1;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+}
+
+/* Buttons */
+.btn {
+  padding: 10px 16px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.btn.primary {
+  background: #4f46e5;
+  color: white;
+}
+
+.btn.primary:hover {
+  background: #4338ca;
+}
+
+.btn.danger {
+  background: #ef4444;
+  color: white;
+}
+
+.btn.danger:hover {
+  background: #dc2626;
+}
+
+.btn.download {
+  background: #10b981;
+  color: white;
+}
+
+.btn.download:hover {
+  background: #059669;
+}
+
+/* File List */
 .file-list {
   margin-top: 20px;
 }
@@ -32,45 +78,28 @@ h1 {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 10px;
-  border-bottom: 1px solid #ddd;
+  padding: 12px 15px;
+  border-bottom: 1px solid #eee;
 }
 
-.file-item a {
-  text-decoration: none;
+.file-item:hover {
+  background: #f9fafb;
+}
+
+.file-name {
+  font-weight: 500;
   color: #333;
 }
 
-.file-item a:hover {
-  text-decoration: underline;
+/* Actions */
+.actions {
+  display: flex;
+  gap: 10px;
 }
 
-.btn {
-  padding: 6px 12px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-.primary {
-  background: #007bff;
-  color: white;
-}
-
-.primary:hover {
-  background: #0056b3;
-}
-
-.danger {
-  background: #dc3545;
-  color: white;
-}
-
-.danger:hover {
-  background: #a71d2a;
-}
-
+/* Empty state */
 .empty {
   text-align: center;
-  color: gray;
+  color: #999;
+  margin-top: 20px;
 }

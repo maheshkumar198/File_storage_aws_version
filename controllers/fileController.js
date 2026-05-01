@@ -1,11 +1,20 @@
 const db = require("../config/db");
 const redis = require("../config/redis");
 
-const { PutObjectCommand, DeleteObjectCommand } = require("@aws-sdk/client-s3");
+const fs = require("fs");
+
+const {
+  PutObjectCommand,
+  DeleteObjectCommand,
+  GetObjectCommand,
+} = require("@aws-sdk/client-s3");
+
+const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
+
 const s3 = require("../config/s3");
 
 
-// 📤 Upload File → S3
+// 📤 Upload File → S3 (FIXED)
 exports.uploadFile = async (req, res) => {
   try {
     const file = req.file;
@@ -14,24 +23,24 @@ exports.uploadFile = async (req, res) => {
       return res.status(400).json({ message: "No file uploaded" });
     }
 
-    // 🔥 clean filename
     const cleanName = file.originalname.replace(/\s+/g, "_");
-
     const key = `uploads/${Date.now()}-${cleanName}`;
 
-    // upload to S3
+    // ✅ IMPORTANT FIX: use file.path
     await s3.send(
       new PutObjectCommand({
         Bucket: process.env.S3_BUCKET,
         Key: key,
-        Body: file.buffer,
+        Body: fs.createReadStream(file.path),
         ContentType: file.mimetype || "application/octet-stream",
       })
     );
 
-    console.log("Uploaded to S3:", key);
+    console.log("Uploaded:", key);
 
-    // ✅ FULL S3 URL (IMPORTANT FIX)
+    // 🧹 delete temp file
+    fs.unlinkSync(file.path);
+
     const fileUrl = `https://${process.env.S3_BUCKET}.s3.${process.env.AWS_REGION}.amazonaws.com/${key}`;
 
     const result = await db.query(
@@ -39,7 +48,6 @@ exports.uploadFile = async (req, res) => {
       [file.originalname, fileUrl]
     );
 
-    // clear cache
     await redis.del("files");
 
     res.json(result.rows[0]);
@@ -51,7 +59,7 @@ exports.uploadFile = async (req, res) => {
 };
 
 
-// 📥 Get Files (Redis + DB)
+// 📥 Get Files
 exports.getFiles = async (req, res) => {
   try {
     const cached = await redis.get("files");
@@ -61,8 +69,6 @@ exports.getFiles = async (req, res) => {
       return res.json(JSON.parse(cached));
     }
 
-    console.log("🐢 DB hit");
-
     const result = await db.query("SELECT * FROM files ORDER BY id DESC");
 
     await redis.set("files", JSON.stringify(result.rows), "EX", 60);
@@ -70,13 +76,12 @@ exports.getFiles = async (req, res) => {
     res.json(result.rows);
 
   } catch (err) {
-    console.error("Fetch error:", err);
     res.status(500).json({ error: err.message });
   }
 };
 
 
-// 🗑️ Delete File → S3
+// 🗑 Delete File
 exports.deleteFile = async (req, res) => {
   try {
     const { id } = req.params;
@@ -92,10 +97,13 @@ exports.deleteFile = async (req, res) => {
 
     const file = result.rows[0];
 
-    // 🔥 extract key from FULL URL
-    const key = file.url.split(".amazonaws.com/")[1];
+    let key;
+    if (file.url.startsWith("http")) {
+      key = file.url.split(".amazonaws.com/")[1];
+    } else {
+      key = file.url;
+    }
 
-    // delete from S3
     await s3.send(
       new DeleteObjectCommand({
         Bucket: process.env.S3_BUCKET,
@@ -103,34 +111,48 @@ exports.deleteFile = async (req, res) => {
       })
     );
 
-    console.log("Deleted from S3:", key);
-
-    // delete from DB
     await db.query("DELETE FROM files WHERE id=$1", [id]);
-
-    // clear cache
     await redis.del("files");
 
     res.json({ message: "Deleted successfully" });
 
   } catch (err) {
-    console.error("Delete error:", err);
     res.status(500).json({ error: err.message });
   }
 };
 
 
-// 📊 Track Download
-exports.trackDownload = async (req, res) => {
+// 🔐 Secure Download (Pre-signed URL)
+exports.getDownloadUrl = async (req, res) => {
   try {
     const { id } = req.params;
 
-    await redis.incr(`file:${id}:downloads`);
+    const result = await db.query(
+      "SELECT * FROM files WHERE id=$1",
+      [id]
+    );
 
-    res.json({ message: "Download tracked" });
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: "File not found" });
+    }
+
+    const file = result.rows[0];
+
+    const key = file.url.split(".amazonaws.com/")[1];
+
+    const command = new GetObjectCommand({
+      Bucket: process.env.S3_BUCKET,
+      Key: key,
+    });
+
+    const signedUrl = await getSignedUrl(s3, command, {
+      expiresIn: 300,
+    });
+
+    res.json({ url: signedUrl });
 
   } catch (err) {
-    console.error("Tracking error:", err);
+    console.error("Download error:", err);
     res.status(500).json({ error: err.message });
   }
 };

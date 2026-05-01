@@ -5,21 +5,20 @@ const {
   uploadFile,
   getFiles,
   deleteFile,
-  trackDownload
+  getDownloadUrl,
 } = require("../controllers/fileController");
 
 const router = express.Router();
 
+// ✅ Disk storage (temporary faster fix)
 const upload = multer({
-  storage: multer.memoryStorage(),
-  limits: {
-    fileSize: 50 * 1024 * 1024, // 50MB
-  },
+  dest: "uploads/",
+  limits: { fileSize: 50 * 1024 * 1024 }, // 50MB
 });
 
 router.post("/upload", upload.single("file"), uploadFile);
 router.get("/files", getFiles);
 router.delete("/files/:id", deleteFile);
-router.post("/download/:id", trackDownload);
+router.get("/download/:id", getDownloadUrl);
 
 module.exports = router;
