@@ -1,27 +1,42 @@
 # 🚀 Cloud File Storage System (AWS + DevOps)
 
-A full-stack cloud-based file management system built using AWS services and modern DevOps practices. This project demonstrates secure file storage, CDN delivery, containerization, and production-grade deployment.
+A production-style cloud-based file storage system built using AWS and modern DevOps practices.
+This project demonstrates secure file handling, CDN delivery, containerized deployment, and real-world infrastructure design.
 
 ---
 
-## 🧱 Architecture
+## 🧱 Architecture Overview
 
-User → CloudFront (CDN + HTTPS) → S3 (Frontend - Private via OAC)
-User → API (NGINX → Node.js on EC2) → RDS (PostgreSQL) + Redis (ElastiCache) → S3 (Private Storage)
+Frontend (React) is served via CloudFront CDN from a private S3 bucket (OAC enabled).
+Backend runs on EC2 behind NGINX reverse proxy with HTTPS.
+Files are stored in private S3 and accessed securely via pre-signed URLs.
+Metadata is stored in PostgreSQL (RDS), and Redis is used for caching.
+
+---
+
+## 🔄 Application Flow
+
+### Upload Flow
+
+Frontend → Backend API → S3 (Private)
+
+### Download Flow
+
+Frontend → Backend API → Generate Pre-Signed URL → S3 → User Download
 
 ---
 
 ## 🔥 Features
 
-* Upload files to Amazon S3
-* Secure file download using **pre-signed URLs**
+* File upload to Amazon S3
+* Secure download using pre-signed URLs
 * Private S3 bucket (no public access)
-* CDN delivery via CloudFront
-* HTTPS enabled using ACM and NGINX
-* Redis caching for performance
-* Dockerized backend
+* CDN delivery using CloudFront
+* HTTPS enabled (ACM + NGINX)
+* Redis caching for improved performance
+* Dockerized backend application
 * CI/CD pipeline using Jenkins
-* Domain and routing using Route 53
+* Custom domain and DNS via Route 53
 
 ---
 
@@ -49,35 +64,36 @@ User → API (NGINX → Node.js on EC2) → RDS (PostgreSQL) + Redis (ElastiCach
 
 ---
 
-## 🔐 Security
+## 🔐 Security Implementation
 
-* S3 bucket is **private**
-* File access controlled using **pre-signed URLs**
-* IAM roles used for secure service communication
+* S3 bucket configured as **private**
+* File access controlled via **pre-signed URLs**
+* IAM roles used for secure AWS service access
 * HTTPS enforced across frontend and backend
+* Reverse proxy for controlled API exposure
 
 ---
 
-## 🚀 Deployment
+## 🚀 Deployment Architecture
 
 ### Frontend
 
-* Built using React
-* Deployed to S3
-* Delivered via CloudFront CDN
+* Built with React
+* Hosted on S3
+* Delivered via CloudFront CDN with HTTPS
 
 ### Backend
 
-* Node.js application running on EC2
-* Reverse proxied using NGINX
+* Node.js app running on EC2
+* NGINX used as reverse proxy
 * Containerized using Docker
-* Images stored in Amazon ECR
+* Docker images stored in Amazon ECR
 
 ---
 
 ## ⚙️ Setup Instructions
 
-### Clone repository
+### 1. Clone Repository
 
 ```bash
 git clone https://github.com/maheshkumar198/File_storage_aws_version
@@ -86,7 +102,7 @@ cd File_storage_aws_version
 
 ---
 
-### Backend Setup
+### 2. Backend Setup
 
 ```bash
 cd backend
@@ -97,7 +113,7 @@ node server.js
 
 ---
 
-### Frontend Setup
+### 3. Frontend Setup
 
 ```bash
 cd frontend
@@ -107,11 +123,29 @@ npm start
 
 ---
 
-### Docker Run
+### 4. Run with Docker
 
 ```bash
 docker build -t backend .
 docker run -p 3000:3000 --env-file .env backend
+```
+
+---
+
+## 🗄️ Database Setup (PostgreSQL)
+
+This project includes a `dump.sql` file for quick database setup.
+
+### Restore Database
+
+```bash
+psql -U your_user -d your_database -f dump.sql
+```
+
+### Example
+
+```bash
+psql -U postgres -d filestorage -f dump.sql
 ```
 
 ---
@@ -121,24 +155,24 @@ docker run -p 3000:3000 --env-file .env backend
 (Add screenshots here)
 
 * Upload file
-* File list
+* File listing
 * Secure download
 
 ---
 
 ## 🎥 Demo Video
 
-(Add YouTube link here)
+(Add YouTube or screen recording link here)
 
 ---
 
 ## 📌 Future Improvements
 
-* Direct S3 upload (pre-signed PUT URLs)
-* ECS deployment (Fargate)
+* Direct S3 upload using pre-signed PUT URLs
+* ECS (Fargate) deployment
 * CI/CD using GitHub Actions
-* Monitoring with CloudWatch
-* WAF for security
+* Monitoring using CloudWatch
+* Web Application Firewall (WAF)
 
 ---
 
