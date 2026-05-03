@@ -89,6 +89,7 @@ cd your-repo
 ### Backend Setup
 
 ```bash
+cd backend
 npm install
 cp .env.example .env
 node server.js
