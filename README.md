@@ -80,8 +80,8 @@ User → API (NGINX → Node.js on EC2) → RDS (PostgreSQL) + Redis (ElastiCach
 ### Clone repository
 
 ```bash
-git clone https://github.com/your-username/your-repo.git
-cd your-repo
+git clone https://github.com/maheshkumar198/File_storage_aws_version
+cd File_storage_aws_version
 ```
 
 ---
