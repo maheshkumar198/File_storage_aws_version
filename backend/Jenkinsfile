@@ -12,6 +12,7 @@ pipeline{
     }
 
     stages {
+        
       stage("install"){
 
         steps {
@@ -20,7 +21,14 @@ pipeline{
             }
         }
       }
-
+      
+      stage('Test + Coverage') {
+            steps {
+                dir('backend') {
+                    sh 'npm run test:coverage'
+                }
+            }
+       }
 
 
 
