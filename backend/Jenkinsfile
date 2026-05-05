@@ -50,7 +50,7 @@ pipeline{
                 '''
             }
         }
-        
+
       stage('Login to ECR') {
             steps {
                 sh '''
@@ -59,7 +59,22 @@ pipeline{
                 '''
             }
         } 
+      stage('Push Image') {
+            steps {
+                sh '''
+                docker push $ECR_REPO:$IMAGE_TAG
+                docker push $ECR_REPO:latest
+                '''
+            }
 
+      stage("cleanup"){
+        steps {
+            sh '''
+            docker system prune -af || true
+            rm -rf *
+             
+        }
+      } 
 
     }
 
