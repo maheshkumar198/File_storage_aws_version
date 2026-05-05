@@ -33,7 +33,7 @@ pipeline{
       stage('Dependency Scan') {
             steps {
                 dir('backend') {
-                    sh 'npm audit --audit-level=high || true'
+                    sh 'npm audit --audit-level=high'
                 }
             }
         }
