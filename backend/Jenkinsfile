@@ -73,13 +73,12 @@ pipeline{
             docker system prune -af || true
             rm -rf *
              '''
-
-
-        }
+              }
+      }      
 
       stage('Deploy') {
             agent { label 'jenkins-server' }
-            
+
             steps {
                 sh '''
                 aws ecr get-login-password --region $AWS_REGION \
@@ -112,4 +111,3 @@ pipeline{
 
 
 
-}
