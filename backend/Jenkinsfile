@@ -77,6 +77,29 @@ pipeline{
 
         }
 
+      stage('Deploy') {
+            agent { label 'jenkins-server' }
+            
+            steps {
+                sh '''
+                aws ecr get-login-password --region $AWS_REGION \
+                | docker login --username AWS --password-stdin $ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com
+
+                docker pull $ECR_REPO:latest
+
+                docker stop my-app || true
+                docker rm my-app || true
+
+                docker run -d \
+                  --name my-app \
+                  --restart always \
+                  --env-file backend/.env \
+                  -p 3000:3000 \
+                  $ECR_REPO:latest
+                '''
+            }
+        }
+
 
       }
 
