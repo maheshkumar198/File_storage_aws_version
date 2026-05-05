@@ -2,13 +2,11 @@ pipeline{
     agent { label 'docker-agent' }
   
     environment {
-        AWS_REGION = "ap-south-1"
-        ECR_REPO = "your-ecr-repo"
-        IMAGE_TAG = "latest"
-        EC2_HOST = "your-ec2-ip"
-        S3_BUCKET = "your-frontend-bucket"
-        CLOUDFRONT_ID = "your-cloudfront-id"
-        SONAR_PROJECT_KEY = "file-storage"
+        AWS_REGION = 'ap-south-1'
+        ACCOUNT_ID = '830279064856'
+        REPO_NAME = 'backendapi'
+        ECR_REPO = "${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${REPO_NAME}"
+        IMAGE_TAG = "${BUILD_NUMBER}"
     }
 
     stages {
@@ -42,8 +40,17 @@ pipeline{
             steps {
                 sh 'trivy fs --exit-code 1 --severity CRITICAL backend'
             }
-        }
+         }
 
+      stage('Build Image') {
+            steps {
+                sh '''
+                cd backend
+                docker build -t $ECR_REPO:$IMAGE_TAG .
+                docker tag $ECR_REPO:$IMAGE_TAG $ECR_REPO:latest
+                '''
+            }
+        }
 
 
     }
