@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js",
+    "test": "jest",
+    "test:coverage": "jest --coverage" 
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1032.0",
@@ -15,5 +17,9 @@
     "ioredis": "^5.3.2",
     "multer": "^1.4.5-lts.1",
     "pg": "^8.11.0"
+  },
+  "devDependencies": {
+    "jest": "^30.3.0",
+    "supertest": "^7.2.2"
   }
 }
