@@ -12,7 +12,7 @@ pipeline{
     }
 
     stages {
-        
+
       stage("install"){
 
         steps {
@@ -30,6 +30,19 @@ pipeline{
             }
        }
 
+      stage('Dependency Scan') {
+            steps {
+                dir('backend') {
+                    sh 'npm audit --audit-level=high || true'
+                }
+            }
+        }
+      
+      stage('Trivy FS Scan') {
+            steps {
+                sh 'trivy fs --severity HIGH,CRITICAL . || true'
+            }
+        }
 
 
 
