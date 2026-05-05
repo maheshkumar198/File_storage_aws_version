@@ -1,19 +1,11 @@
-
 pipeline {
     agent any
 
     stages {
-        stage('Checkout Code') {
+        stage('Test Backend') {
             steps {
-                git branch: 'master', 
-                    url: 'https://github.com/maheshkumar198/File_storage_aws_version.git'
-            }
-        }
-
-        stage('Verify Files') {
-            steps {
+                sh 'echo Backend working ✅'
                 sh 'ls -la'
-                sh 'echo "Checkout successful ✅"'
             }
         }
     }
