@@ -66,15 +66,23 @@ pipeline{
                 docker push $ECR_REPO:latest
                 '''
             }
-
+      }    
       stage("cleanup"){
         steps {
-            sh '''
+          sh '''
             docker system prune -af || true
             rm -rf *
-             
+             '''
+
+
         }
-      } 
+
+
+      }
+
+      
+        
+      
 
     }
 
