@@ -1,12 +1,33 @@
-pipeline {
-    agent any
+pipeline{
+    agent { label 'docker-agent' }
+  
+    environment {
+        AWS_REGION = "ap-south-1"
+        ECR_REPO = "your-ecr-repo"
+        IMAGE_TAG = "latest"
+        EC2_HOST = "your-ec2-ip"
+        S3_BUCKET = "your-frontend-bucket"
+        CLOUDFRONT_ID = "your-cloudfront-id"
+        SONAR_PROJECT_KEY = "file-storage"
+    }
 
     stages {
-        stage('Test Backend') {
-            steps {
-                sh 'echo Backend working ✅'
-                sh 'ls -la'
+      stage("install"){
+
+        steps {
+            dir('backend') {
+                sh 'npm install'
             }
         }
+      }
+
+
+
+
+
     }
+    
+
+
+
 }
