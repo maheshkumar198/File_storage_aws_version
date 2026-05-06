@@ -173,7 +173,7 @@ pipeline {
                   --name backendapi \
                   --restart always \
                   -p 3000:3000 \
-                  --env-file /opt/backend.env \
+                  --env-file backend/.env \
                   $ECR_REPO:latest
                 '''
             }
