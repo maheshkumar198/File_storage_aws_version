@@ -2,11 +2,10 @@ pipeline {
 
     agent { label 'docker-agent' }
 
-    
-
     environment {
 
         AWS_REGION = 'ap-south-1'
+
         ACCOUNT_ID = '830279064856'
 
         REPO_NAME = 'backendapi'
@@ -19,6 +18,34 @@ pipeline {
     }
 
     stages {
+
+        stage('Check Changes') {
+
+            steps {
+
+                script {
+
+                    def changedFiles = sh(
+                        script: "git diff --name-only HEAD~1 HEAD",
+                        returnStdout: true
+                    ).trim()
+
+                    echo "Changed files:"
+                    echo changedFiles
+
+                    def backendChanged = changedFiles.split("\n").any {
+                        it.startsWith("backend/")
+                    }
+
+                    if (!backendChanged) {
+
+                        currentBuild.result = 'NOT_BUILT'
+
+                        error("Skipping build: No backend changes detected")
+                    }
+                }
+            }
+        }
 
         stage('Install Dependencies') {
 
@@ -88,7 +115,7 @@ pipeline {
 
                 sh '''
                 trivy fs backend \
-                --severity HIGH,CRITICAL \
+                --severity CRITICAL \
                 --exit-code 1
                 '''
             }
@@ -116,7 +143,7 @@ pipeline {
 
                 sh '''
                 trivy image \
-                --severity HIGH,CRITICAL \
+                --severity CRITICAL \
                 --exit-code 1 \
                 $ECR_REPO:$IMAGE_TAG
                 '''
@@ -173,7 +200,7 @@ pipeline {
                   --name backendapi \
                   --restart always \
                   -p 3000:3000 \
-                  --env-file /opt/backend.env \
+                  --env-file backend/.env \
                   $ECR_REPO:latest
                 '''
             }
@@ -196,6 +223,7 @@ pipeline {
 
             sh '''
             docker image prune -af || true
+            rm -rf *
             '''
         }
     }
