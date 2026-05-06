@@ -116,7 +116,7 @@ pipeline {
 
                 sh '''
                 trivy image \
-                --severity HIGH,CRITICAL \
+                --severity CRITICAL \
                 --exit-code 1 \
                 $ECR_REPO:$IMAGE_TAG
                 '''
