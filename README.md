@@ -225,7 +225,7 @@ psql -U postgres -d filestorage -f dump.sql
 * Kubernetes / EKS deployment
 * Monitoring and observability integration
 * Web Application Firewall (WAF)
-* 
+  
 
 ---
 
