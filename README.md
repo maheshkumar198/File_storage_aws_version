@@ -1,99 +1,165 @@
-# 🚀 Cloud File Storage System (AWS + DevOps)
+# 🚀 Cloud File Storage System (AWS + DevSecOps)
 
-A production-style cloud-based file storage system built using AWS and modern DevOps practices.
-This project demonstrates secure file handling, CDN delivery, containerized deployment, and real-world infrastructure design.
-
----
-
-## 🧱 Architecture Overview
-
-Frontend (React) is served via CloudFront CDN from a private S3 bucket (OAC enabled).
-Backend runs on EC2 behind NGINX reverse proxy with HTTPS.
-Files are stored in private S3 and accessed securely via pre-signed URLs.
-Metadata is stored in PostgreSQL (RDS), and Redis is used for caching.
+A production-style cloud-native file storage platform built using AWS and modern DevSecOps practices.
+This project demonstrates secure file handling, CDN delivery, containerized deployment, CI/CD automation, security scanning, and production-ready infrastructure design.
 
 ---
 
-## 🔄 Application Flow
+# 🧱 Architecture Overview
 
-### Upload Flow
+* Frontend (React) is hosted on Amazon S3 and delivered globally using CloudFront CDN with HTTPS enabled via ACM
+* Backend runs as a Dockerized Node.js application on EC2 behind NGINX reverse proxy with HTTPS using Let’s Encrypt
+* Files are stored securely in private S3 buckets and accessed through pre-signed URLs
+* PostgreSQL (Amazon RDS) is used for metadata storage
+* Redis OSS (Amazon ElastiCache) is used for caching and performance optimization
+* Docker images are stored in Amazon ECR
+* CI/CD pipelines are automated using Jenkins with dedicated worker nodes
 
+---
+
+# 🔄 Application Flow
+
+## Upload Flow
+
+```text
 Frontend → Backend API → S3 (Private)
+```
 
-### Download Flow
+## Download Flow
 
+```text
 Frontend → Backend API → Generate Pre-Signed URL → S3 → User Download
+```
 
 ---
 
-## 🔥 Features
+# 🔥 Features
 
-* File upload to Amazon S3
-* Secure download using pre-signed URLs
-* Private S3 bucket (no public access)
-* CDN delivery using CloudFront
-* HTTPS enabled (ACM + NGINX)
-* Redis caching for improved performance
-* Dockerized backend application
-* CI/CD pipeline using Jenkins
-* Custom domain and DNS via Route 53
-
----
-
-## ☁️ AWS Services Used
-
-* EC2 (Backend hosting)
-* S3 (File storage + frontend hosting)
-* CloudFront (CDN + HTTPS)
-* RDS (PostgreSQL database)
-* ElastiCache (Redis caching)
-* Route 53 (DNS management)
-* IAM (secure access control)
-* ECR (Docker image registry)
+* Secure file upload to Amazon S3
+* Secure file download using pre-signed URLs
+* Private S3 bucket architecture (no public access)
+* Global CDN delivery using CloudFront
+* HTTPS enabled across frontend and backend
+* Redis caching for performance optimization
+* Dockerized backend deployment
+* Automated backend CI/CD pipeline using Jenkins
+* Static code analysis using SonarQube
+* Security scanning using Trivy
+* Quality Gate enforcement for code quality validation
+* GitHub and SonarQube webhook integration
+* Monorepo architecture with separate frontend and backend pipelines
+* Custom domain and DNS management using Route 53
 
 ---
 
-## 🛠️ Tech Stack
+# ☁️ AWS Services Used
 
-* Node.js (Express)
-* React.js
+* EC2
+* S3
+* CloudFront
+* RDS (PostgreSQL)
+* ElastiCache (Redis OSS)
+* Route 53
+* IAM
+* ECR
+* ACM
+
+---
+
+# ⚙️ DevSecOps Pipeline
+
+## Backend CI/CD Flow
+
+```text
+GitHub Push
+   ↓
+Jenkins Pipeline Trigger
+   ↓
+Install Dependencies
+   ↓
+Run Tests + Coverage
+   ↓
+SonarQube Code Analysis
+   ↓
+Quality Gate Validation
+   ↓
+Trivy Security Scan
+   ↓
+Docker Build
+   ↓
+Push Image to Amazon ECR
+   ↓
+Deploy Container on EC2
+```
+
+## CI/CD Features
+
+* Dedicated Jenkins worker node for build execution
+* Automated Docker image build and deployment
+* SonarQube Quality Gate enforcement
+* Trivy filesystem and image vulnerability scanning
+* GitHub webhook integration
+* SonarQube webhook integration
+* Separate pipelines for frontend and backend services
+
+---
+
+# 🛠️ Tech Stack
+
+## Backend
+
+* Node.js
+* Express.js
 * PostgreSQL
 * Redis
+
+## Frontend
+
+* React.js
+
+## DevOps & Infrastructure
+
 * Docker
+* Jenkins
 * NGINX
+* SonarQube
+* Trivy
+* AWS
 
 ---
 
-## 🔐 Security Implementation
+# 🔐 Security Implementation
 
-* S3 bucket configured as **private**
-* File access controlled via **pre-signed URLs**
-* IAM roles used for secure AWS service access
+* S3 bucket configured as private
+* File access controlled using pre-signed URLs
+* IAM roles used for secure EC2 access to S3, RDS, and ECR
 * HTTPS enforced across frontend and backend
-* Reverse proxy for controlled API exposure
+* NGINX reverse proxy for controlled API exposure
+* Automated vulnerability scanning integrated into CI/CD pipeline
+* Quality Gate validation to prevent insecure or low-quality deployments
 
 ---
 
-## 🚀 Deployment Architecture
+# 🚀 Deployment Architecture
 
-### Frontend
+## Frontend
 
-* Built with React
-* Hosted on S3
-* Delivered via CloudFront CDN with HTTPS
+* React application hosted on Amazon S3
+* Delivered globally using CloudFront CDN
+* HTTPS enabled via ACM
 
-### Backend
+## Backend
 
-* Node.js app running on EC2
-* NGINX used as reverse proxy
-* Containerized using Docker
-* Docker images stored in Amazon ECR
+* Dockerized Node.js application running on EC2
+* NGINX reverse proxy with Let’s Encrypt SSL
+* Docker images managed through Amazon ECR
+* Automated deployment using Jenkins CI/CD pipeline
 
 ---
 
-## ⚙️ Setup Instructions
+# ⚙️ Setup Instructions
 
-### 1. Clone Repository
+## 1. Clone Repository
 
 ```bash
 git clone https://github.com/maheshkumar198/File_storage_aws_version
@@ -102,47 +168,49 @@ cd File_storage_aws_version
 
 ---
 
-### 2. Backend Setup
+## 2. Backend Setup
 
 ```bash
 cd backend
+
 npm install
+
 cp .env.example .env
-node server.js
-```
 
----
-
-### 3. Frontend Setup
-
-```bash
-cd frontend
-npm install
 npm start
 ```
 
 ---
 
-### 4. Run with Docker
+## 3. Frontend Setup
 
 ```bash
-docker build -t backend .
-docker run -p 3000:3000 --env-file .env backend
+cd frontend
+
+npm install
+
+npm start
 ```
 
 ---
 
-## 🗄️ Database Setup (PostgreSQL)
-
-This project includes a `dump.sql` file for quick database setup.
-
-### Restore Database
+## 4. Run with Docker
 
 ```bash
-psql -U your_user -d your_database -f dump.sql
+docker build -t backend ./backend
+
+docker run -d \
+  --name backend \
+  -p 3000:3000 \
+  --env-file backend/.env \
+  backend
 ```
 
-### Example
+---
+
+# 🗄️ Database Setup (PostgreSQL)
+
+Restore database using:
 
 ```bash
 psql -U postgres -d filestorage -f dump.sql
@@ -150,35 +218,18 @@ psql -U postgres -d filestorage -f dump.sql
 
 ---
 
-## 📸 Demo
+# 📌 Current Improvements in Progress
 
-(Add screenshots here)
-
-* Upload file
-* File listing
-* Secure download
-
----
-
-## 🎥 Demo Video
-
-(Add YouTube or screen recording link here)
-
----
-
-## 📌 Future Improvements
-
-* Direct S3 upload using pre-signed PUT URLs
-* ECS (Fargate) deployment
-* CI/CD using GitHub Actions
-* Monitoring using CloudWatch
+* Frontend CI/CD pipeline automation
+* Infrastructure as Code using Terraform
+* Kubernetes / EKS deployment
+* Monitoring and observability integration
 * Web Application Firewall (WAF)
+  
 
 ---
 
-## 👨‍💻 Author
+# 👨‍💻 Author
 
 Mahesh Maharana
 System Administrator → Cloud & DevOps Engineer
-
----
