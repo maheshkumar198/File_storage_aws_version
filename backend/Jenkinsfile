@@ -1,113 +1,202 @@
-pipeline{
+pipeline {
+
     agent { label 'docker-agent' }
-  
+
+    
+
     environment {
+
         AWS_REGION = 'ap-south-1'
         ACCOUNT_ID = '830279064856'
+
         REPO_NAME = 'backendapi'
+
         ECR_REPO = "${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${REPO_NAME}"
+
         IMAGE_TAG = "${BUILD_NUMBER}"
+
+        SONAR_SCANNER = tool 'sonar scanner'
     }
 
     stages {
 
-      stage("install"){
+        stage('Install Dependencies') {
 
-        steps {
-            dir('backend') {
-                sh 'npm install'
+            steps {
+
+                dir('backend') {
+
+                    sh 'npm install'
+                }
             }
         }
-      }
-      
-      stage('Test + Coverage') {
+
+        stage('Run Tests + Coverage') {
+
             steps {
+
                 dir('backend') {
+
                     sh 'npm run test:coverage'
                 }
             }
-       }
+        }
 
-      stage('Dependency Scan') {
+        stage('Dependency Scan') {
+
             steps {
+
                 dir('backend') {
-                    sh 'npm audit --audit-level=high'
+
+                    sh '''
+                    npm audit --audit-level=high
+                    '''
                 }
             }
         }
-      
-      stage('Trivy FS Scan') {
-            steps {
-                sh 'trivy fs --exit-code 1 --severity CRITICAL backend'
-            }
-         }
 
-      stage('Build Image') {
+        stage('SonarQube Scan') {
+
             steps {
+
+                dir('backend') {
+
+                    withSonarQubeEnv('sonarqube') {
+
+                        sh '''
+                        ${SONAR_SCANNER}/bin/sonar-scanner
+                        '''
+                    }
+                }
+            }
+        }
+
+        stage('Quality Gate') {
+
+            steps {
+
+                timeout(time: 5, unit: 'MINUTES') {
+
+                    waitForQualityGate abortPipeline: true
+                }
+            }
+        }
+
+        stage('Trivy File System Scan') {
+
+            steps {
+
                 sh '''
-                docker build -t $ECR_REPO:$IMAGE_TAG backend/
-                docker tag $ECR_REPO:$IMAGE_TAG $ECR_REPO:latest
+                trivy fs backend \
+                --severity HIGH,CRITICAL \
+                --exit-code 1
                 '''
             }
         }
 
-      stage('Login to ECR') {
+        stage('Build Docker Image') {
+
             steps {
+
                 sh '''
-                aws ecr get-login-password --region $AWS_REGION \
-                | docker login --username AWS --password-stdin $ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com
+                docker build \
+                -t $ECR_REPO:$IMAGE_TAG \
+                backend/
+
+                docker tag \
+                $ECR_REPO:$IMAGE_TAG \
+                $ECR_REPO:latest
                 '''
             }
-        } 
-      stage('Push Image') {
+        }
+
+        stage('Trivy Image Scan') {
+
             steps {
+
+                sh '''
+                trivy image \
+                --severity HIGH,CRITICAL \
+                --exit-code 1 \
+                $ECR_REPO:$IMAGE_TAG
+                '''
+            }
+        }
+
+        stage('Login to AWS ECR') {
+
+            steps {
+
+                sh '''
+                aws ecr get-login-password \
+                --region $AWS_REGION \
+                | docker login \
+                --username AWS \
+                --password-stdin \
+                $ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com
+                '''
+            }
+        }
+
+        stage('Push Docker Image') {
+
+            steps {
+
                 sh '''
                 docker push $ECR_REPO:$IMAGE_TAG
+
                 docker push $ECR_REPO:latest
                 '''
             }
-      }    
-      stage("cleanup"){
-        steps {
-          sh '''
-            docker system prune -af || true
-            rm -rf *
-             '''
-              }
-      }      
+        }
 
-      stage('Deploy') {
+        stage('Deploy Application') {
+
             agent { label 'jenkins-server' }
 
             steps {
+
                 sh '''
-                aws ecr get-login-password --region $AWS_REGION \
-                | docker login --username AWS --password-stdin $ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com
+                aws ecr get-login-password \
+                --region $AWS_REGION \
+                | docker login \
+                --username AWS \
+                --password-stdin \
+                $ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com
 
                 docker pull $ECR_REPO:latest
 
-                docker stop my-app || true
-                docker rm my-app || true
+                docker stop backendapi || true
+                docker rm backendapi || true
 
                 docker run -d \
-                  --name my-app \
+                  --name backendapi \
                   --restart always \
-                  --env-file backend/.env \
                   -p 3000:3000 \
+                  --env-file /opt/backend.env \
                   $ECR_REPO:latest
                 '''
             }
         }
-
-
-      }
-
-      
-        
-      
-
     }
 
+    post {
 
+        success {
 
+            echo 'Pipeline completed successfully'
+        }
 
+        failure {
+
+            echo 'Pipeline failed'
+        }
+
+        always {
+
+            sh '''
+            docker image prune -af || true
+            '''
+        }
+    }
+}
