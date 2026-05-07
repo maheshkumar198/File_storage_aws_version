@@ -18,6 +18,8 @@ This project demonstrates secure file handling, CDN delivery, containerized depl
 
 
 ---
+## LinkedIn Project Post
+https://www.linkedin.com/posts/mahesh-maharana-160989291_built-a-production-style-devsecops-file-storage-ugcPost-7457959231355240448-r6Ci?utm_source=share&utm_medium=member_desktop&rcm=ACoAAEbNQZgBL00engJLb_Uv5PuXfwlOL-g_dMs
 
 # 🔄 Application Flow
 
