@@ -14,6 +14,8 @@ This project demonstrates secure file handling, CDN delivery, containerized depl
 * Redis OSS (Amazon ElastiCache) is used for caching and performance optimization
 * Docker images are stored in Amazon ECR
 * CI/CD pipelines are automated using Jenkins with dedicated worker nodes
+  <img width="1536" height="1024" alt="arch" src="https://github.com/user-attachments/assets/a11e8d03-f651-421e-b5fb-4711cb9a4817" />
+
 
 ---
 
