@@ -1,0 +1,57 @@
+apiVersion: eksctl.io/v1alpha5
+kind: ClusterConfig
+
+metadata:
+  name: filestorage
+  region: ap-south-1
+
+  tags:
+    owner: mahesh-maharana
+    bu: mahesh
+    project: filestorage
+
+
+vpc:
+  id: "vpc-08537f994a45b5b2e"
+
+  subnets:
+
+    public:
+      ap-south-1a:
+        id: "subnet-09630006c87ba0204"
+
+      ap-south-1b:
+        id: "subnet-07954ee4859ffadd6"
+
+iam:
+  withOIDC: true
+
+managedNodeGroups:
+  - name: filestorage-ng
+
+    instanceType: t3.medium
+
+    minSize: 2
+    desiredCapacity: 2
+    maxSize: 2
+
+    privateNetworking: false
+
+    subnets:
+      - "subnet-09630006c87ba0204"
+      - "subnet-07954ee4859ffadd6"
+
+    volumeSize: 20
+
+    ssh:
+      allow: true
+      publicKeyName: Aurnex
+
+    iam:
+      withAddonPolicies:
+        autoScaler: true
+        certManager: true
+        albIngress: true
+
+    labels:
+      lifecycle: ec2-autoscaler
