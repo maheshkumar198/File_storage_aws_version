@@ -8,7 +8,7 @@ on:
     
 env:
   AWS_REGION: ap-south-1
-  ACCOUNT_ID: ${ { secrets.AWS_ACCOUNT_ID } }
+  ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
   REPO_NAME: file-storage-backend
   ECR_REPO: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.ap-south-1.amazonaws.com/file-storage-backend
   IMAGE_TAG: ${{ github.sha }}
