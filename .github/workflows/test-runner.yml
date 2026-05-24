@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - main
+    paths:
+      - 'backend/**'
 
 jobs:
 
@@ -15,12 +17,23 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Check Runner
-        run: |
-          echo "Runner Working"
+      - name: Install Dependencies
+        working-directory: backend
+        run: npm install
 
-          hostname
+      - name: Run Tests
+        working-directory: backend
+        run: npm run test:coverage
 
-          whoami
+      - name: NPM Audit
+        working-directory: backend
+        run: npm audit --audit-level=high
 
-          docker --version
+      - name: Trivy Filesystem Scan
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          scan-type: fs
+          scan-ref: backend
+          severity: CRITICAL,HIGH
+          exit-code: 1
+          ignore-unfixed: true 
