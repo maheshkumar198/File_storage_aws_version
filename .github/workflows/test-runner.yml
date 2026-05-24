@@ -24,9 +24,3 @@ jobs:
           whoami
 
           docker --version
-
-          node -v
-
-          npm -v
-
-          aws sts get-caller-identity
