@@ -6,6 +6,12 @@ on:
     branches:
       - main
     
+env:
+  AWS_REGION: ap-south-1
+  ACCOUNT_ID: ${ { secrets.AWS_ACCOUNT_ID } }
+  REPO_NAME: file-storage-backend
+  ECR_REPO: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.ap-south-1.amazonaws.com/file-storage-backend
+  IMAGE_TAG: ${{ github.sha }}
 
 jobs:
 
@@ -28,7 +34,7 @@ jobs:
       - name: NPM Audit
         working-directory: backend
         run: npm audit --audit-level=high
-
+      
       - name: Trivy Filesystem Scan
         uses: aquasecurity/trivy-action@master
         with:
@@ -37,18 +43,27 @@ jobs:
           severity: CRITICAL
           exit-code: 1
           ignore-unfixed: true
-      
+
+      - name: Login to Amazon ECR
+        run: |
+          aws ecr get-login-password \
+          --region $AWS_REGION \
+          | docker login \
+          --username AWS \
+          --password-stdin \
+          $ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com
+
       - name: Build Docker Image
         run: |
           docker build \
-            -t my-backend-image:latest \
+            -t $ECR_REPO:$IMAGE_TAG \
+            -t $ECR_REPO:latest \
             backend/
 
       - name: Trivy Docker Image Scan
-        uses: aquasecurity/trivy-action@master 
+        uses: aquasecurity/trivy-action@master
         with:
-          scan-type: image
-          scan-ref: my-backend-image:latest
+          image-ref: ${{ env.ECR_REPO }}:${{ env.IMAGE_TAG }}
           severity: CRITICAL
           exit-code: 1
           ignore-unfixed: true
