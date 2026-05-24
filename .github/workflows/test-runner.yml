@@ -8,7 +8,7 @@ on:
 jobs:
 
   test-runner:
-    runs-on: [self-hosted, backend, prod]
+    runs-on: self-hosted
 
     steps:
 
