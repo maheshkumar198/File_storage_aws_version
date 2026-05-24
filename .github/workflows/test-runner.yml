@@ -1,0 +1,32 @@
+name: Test Self Hosted Runner
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+
+  test-runner:
+    runs-on: [self-hosted, backend, prod]
+
+    steps:
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Check Runner
+        run: |
+          echo "Runner Working"
+
+          hostname
+
+          whoami
+
+          docker --version
+
+          node -v
+
+          npm -v
+
+          aws sts get-caller-identity
