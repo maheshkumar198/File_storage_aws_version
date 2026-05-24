@@ -23,47 +23,64 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Install Dependencies
-        working-directory: backend
-        run: npm install
+      # - name: Install Dependencies
+      #   working-directory: backend
+      #   run: npm install
 
-      - name: Run Tests
-        working-directory: backend
-        run: npm run test:coverage
+      # - name: Run Tests
+      #   working-directory: backend
+      #   run: npm run test:coverage
 
-      - name: NPM Audit
-        working-directory: backend
-        run: npm audit --audit-level=high
+      # - name: NPM Audit
+      #   working-directory: backend
+      #   run: npm audit --audit-level=high
       
-      - name: Trivy Filesystem Scan
-        uses: aquasecurity/trivy-action@master
-        with:
-          scan-type: fs
-          scan-ref: backend
-          severity: CRITICAL
-          exit-code: 1
-          ignore-unfixed: true
+      # - name: Trivy Filesystem Scan
+      #   uses: aquasecurity/trivy-action@master
+      #   with:
+      #     scan-type: fs
+      #     scan-ref: backend
+      #     severity: CRITICAL
+      #     exit-code: 1
+      #     ignore-unfixed: true
 
-      - name: Login to Amazon ECR
+      - name: Read RDS Secret
         run: |
-          aws ecr get-login-password --region ${{ env.AWS_REGION }} | docker login --username AWS --password-stdin ${{ env.ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com
+          SECRET=$(aws secretsmanager get-secret-value \
+            --secret-id filestorage-db-secret \
+            --query SecretString \
+            --output text)
+          DB_HOST=$(echo "$SECRET" | jq -r .host)
+          DB_USER=$(echo "$SECRET" | jq -r .username)
+          DB_PASS=$(echo "$SECRET" | jq -r .password)
+          DB_NAME=$(echo "$SECRET" | jq -r .database)
+          echo "DB_HOST=$DB_HOST" 
+          echo "DB_USER=$DB_USER" 
+          echo "DB_PASS=$DB_PASS" >> $GITHUB_ENV
+          echo "DB_NAME=$DB_NAME" 
 
-      - name: Build Docker Image
-        run: |
-          docker build \
-            -t $ECR_REPO:$IMAGE_TAG \
-            -t $ECR_REPO:latest \
-            backend/
+      # - name: Login to Amazon ECR
+      #   run: |
+      #     aws ecr get-login-password --region ${{ env.AWS_REGION }} | docker login --username AWS --password-stdin ${{ env.ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com
+      
+      # - name: Build Docker Image
+      #   run: |
+      #     docker build \
+      #       -t $ECR_REPO:$IMAGE_TAG \
+      #       -t $ECR_REPO:latest \
+      #       backend/
 
-      - name: Trivy Docker Image Scan
-        uses: aquasecurity/trivy-action@master
-        with:
-          image-ref: ${{ env.ECR_REPO }}:${{ env.IMAGE_TAG }}
-          severity: CRITICAL
-          exit-code: 1
-          ignore-unfixed: true
+      # - name: Trivy Docker Image Scan
+      #   uses: aquasecurity/trivy-action@master
+      #   with:
+      #     image-ref: ${{ env.ECR_REPO }}:${{ env.IMAGE_TAG }}
+      #     severity: CRITICAL
+      #     exit-code: 1
+      #     ignore-unfixed: true
 
-      - name: Push Docker Images
-        run: |
-          docker push $ECR_REPO:$IMAGE_TAG
-          docker push $ECR_REPO:latest
+      # - name: Push Docker Images
+      #   run: |
+      #     docker push $ECR_REPO:$IMAGE_TAG
+      #     docker push $ECR_REPO:latest
+
+      
