@@ -37,5 +37,18 @@ jobs:
           severity: CRITICAL
           exit-code: 1
           ignore-unfixed: true
+      
+      - name: Build Docker Image
+        run: |
+          docker build \
+            -t my-backend-image:latest \
+            backend/
 
-#test
+      - name: Trivy Docker Image Scan
+        uses: aquasecurity/trivy-action@master 
+        with:
+          scan-type: image
+          scan-ref: my-backend-image:latest
+          severity: CRITICAL
+          exit-code: 1
+          ignore-unfixed: true
