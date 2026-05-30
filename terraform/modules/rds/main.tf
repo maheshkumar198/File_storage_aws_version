@@ -63,6 +63,7 @@ resource "random_password" "db_password" {
 
 resource "aws_secretsmanager_secret" "rds_secret" {
   name = var.aws_db_secret_name 
+  recovery_window_in_days = 0
   
 }
 

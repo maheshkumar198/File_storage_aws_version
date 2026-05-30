@@ -43,7 +43,6 @@ resource "aws_elasticache_subnet_group" "this" {
 resource "aws_elasticache_cluster" "this" {
 
   cluster_id = "${var.project_name}-redis"
-  transit_encryption_enabled = true
   engine = "redis"
 
   node_type = "cache.t3.micro"
