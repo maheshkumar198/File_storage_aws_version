@@ -3,6 +3,7 @@ kind: Deployment
 
 metadata:
   name: backend
+  namespace: backend
 
 spec:
   replicas: 2
@@ -21,15 +22,27 @@ spec:
 
       containers:
         - name: backend
-
-          image: 830279064856.dkr.ecr.ap-south-1.amazonaws.com/backendapi:latest
+          image: 905179308072.dkr.ecr.ap-south-1.amazonaws.com/file-storage-backend:latest
 
           ports:
             - containerPort: 3000
 
+          env:
+            - name: PORT
+              value: "3000"
+
+            - name: AWS_REGION
+              value: "ap-south-1"
+
+            - name: S3_BUCKET
+              value: "file-storage-dev-bucket"
+
           envFrom:
             - secretRef:
-                name: backend-secret
+                name: db-secret
+
+            - secretRef:
+                name: redis-secret
 
           resources:
             requests:
