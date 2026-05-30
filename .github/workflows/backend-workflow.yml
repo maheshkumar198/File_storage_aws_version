@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
   push:
     branches:
-      - main
+      - main/backend
     
 env:
   AWS_REGION: ap-south-1
