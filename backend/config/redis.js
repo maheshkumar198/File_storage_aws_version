@@ -6,8 +6,8 @@ const redis = new Redis({
   port: process.env.REDIS_PORT,
 
   // 🔥 TLS FIX
-  tls: {},
-});
+//   tls: {},
+// });
 
 redis.on("connect", () => console.log("✅ Redis connected"));
 redis.on("error", (err) => console.error("❌ Redis error:", err));
