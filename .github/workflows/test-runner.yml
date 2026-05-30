@@ -1,4 +1,4 @@
-name: Test Self Hosted Runner
+name: Backend-workflow
 
 on:
   workflow_dispatch:
@@ -43,21 +43,6 @@ jobs:
           severity: CRITICAL
           exit-code: 1
           ignore-unfixed: true
-
-      - name: Read RDS Secret
-        run: |
-          SECRET=$(aws secretsmanager get-secret-value \
-            --secret-id filestorage-db-secret \
-            --query SecretString \
-            --output text)
-          DB_HOST=$(echo "$SECRET" | jq -r .host)
-          DB_USER=$(echo "$SECRET" | jq -r .username)
-          DB_PASS=$(echo "$SECRET" | jq -r .password)
-          DB_NAME=$(echo "$SECRET" | jq -r .database)
-          echo "DB_HOST=$DB_HOST" >> $GITHUB_ENV
-          echo "DB_USER=$DB_USER" >> $GITHUB_ENV
-          echo "DB_PASS=$DB_PASS" >> $GITHUB_ENV
-          echo "DB_NAME=$DB_NAME" >> $GITHUB_ENV
 
       - name: Login to Amazon ECR
         run: |
