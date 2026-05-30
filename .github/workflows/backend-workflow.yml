@@ -17,7 +17,7 @@ env:
 
 jobs:
 
-  test-runner:
+  backend-ci:
     runs-on: self-hosted
 
     steps:
