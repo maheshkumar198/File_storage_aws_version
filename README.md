@@ -6,17 +6,6 @@ A production-style cloud-native file storage platform built on AWS using modern 
 
 This project demonstrates Infrastructure as Code (Terraform), Kubernetes orchestration, GitOps deployment with ArgoCD, CI/CD with GitHub Actions, cloud-native monitoring, autoscaling, secrets management, and production-grade AWS services.
 
----
-
-# 🌐 Live Application
-
-### Frontend
-
-https://maheshmaharana.online
-
-### Backend API
-
-https://api.maheshmaharana.online
 
 ---
 
