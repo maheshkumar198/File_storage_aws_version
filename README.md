@@ -537,21 +537,10 @@ kubectl apply -f applications/
 
 ## ArgoCD Dashboard
 
-*Add Screenshot*
+<img width="1897" height="867" alt="image" src="https://github.com/user-attachments/assets/c71b328a-eff3-41c6-bff9-e8a0f6296035" />
+<img width="1894" height="872" alt="image" src="https://github.com/user-attachments/assets/8ed9296b-79d5-41ce-a09d-e870e669bb01" />
 
 ## Grafana Dashboard
-
-*Add Screenshot*
-
-## Prometheus Alerts
-
-*Add Screenshot*
-
-## Alertmanager Email Notification
-
-*Add Screenshot*
-
-## HPA Scaling
 
 *Add Screenshot*
 
