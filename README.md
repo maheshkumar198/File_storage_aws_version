@@ -542,7 +542,9 @@ kubectl apply -f applications/
 
 ## Grafana Dashboard
 
-*Add Screenshot*
+<img width="1895" height="866" alt="image" src="https://github.com/user-attachments/assets/2cf8c097-e926-49be-bc08-7583c2789a3c" />
+<img width="1905" height="873" alt="image" src="https://github.com/user-attachments/assets/40eb26cf-bb9c-48ce-bd41-7b4e8950e743" />
+
 
 ---
 
