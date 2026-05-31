@@ -153,6 +153,7 @@ ArgoCD
    ▼
 Amazon EKS
 ```
+<img width="1900" height="809" alt="image" src="https://github.com/user-attachments/assets/df2ed2bd-7b18-4d12-bf4f-5eb206658f69" />
 
 ### Features
 
