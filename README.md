@@ -579,7 +579,7 @@ Cloud & DevOps Engineer
 
 GitHub: https://github.com/maheshkumar198
 
-LinkedIn: https://www.linkedin.com/
+LinkedIn: www.linkedin.com/in/mahesh-maharana-160989291
 
 ---
 
