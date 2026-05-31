@@ -1,341 +1,462 @@
-# 🚀 Cloud-Native File Storage Platform (AWS + Kubernetes + DevSecOps)
+# 🚀 Cloud-Native File Storage Platform (AWS + Kubernetes + DevOps)
 
-A production-style cloud-native file storage platform built using AWS managed services, Kubernetes, and DevSecOps practices.
+A production-style cloud-native file storage platform built using AWS, Kubernetes, Terraform, GitOps, and modern DevOps practices.
 
-This project demonstrates secure file upload/download architecture, Kubernetes deployment on Amazon EKS, AWS integrations using IRSA, HTTPS ingress routing, CI/CD automation, containerized workloads, and production-ready cloud-native infrastructure design.
-
----
-
-# 🌐 Live Architecture
-
-Frontend:
-
-* https://maheshmaharana.online
-
-Backend API:
-
-* https://api.maheshmaharana.online
+This project demonstrates end-to-end infrastructure provisioning, application deployment, GitOps workflows, monitoring, alerting, autoscaling, secrets management, and cloud-native operations.
 
 ---
 
-# 🧱 Architecture Overview
-<img width="1536" height="1024" alt="ChatGPT Image May 12, 2026, 06_21_52 AM" src="https://github.com/user-attachments/assets/c8e53ae9-b49f-4d3f-8407-8622e3bb8e09" />
+# 🏗 Architecture Overview
 
+The application is deployed on Amazon EKS and follows GitOps principles using ArgoCD.
 
-Frontend (React) is hosted on Amazon S3 and delivered globally using CloudFront CDN with HTTPS enabled using AWS ACM.
+```text
+Users
+   │
+   ▼
+Route53
+   │
+   ▼
+AWS ALB Ingress Controller
+   │
+   ▼
+EKS Cluster
+   ├── Frontend Pods
+   ├── Backend Pods
+   ├── HPA
+   ├── Metrics Server
+   ├── Prometheus
+   ├── Grafana
+   ├── Alertmanager
+   └── External Secrets Operator
+          │
+          ▼
+AWS Secrets Manager
 
-Backend runs as a containerized Node.js application on Amazon EKS (Kubernetes) using Deployments and Services.
+Backend Pods
+   ├── PostgreSQL (Amazon RDS)
+   └── Redis Cache
 
-Traffic is securely exposed using AWS Load Balancer Controller with Kubernetes Ingress and HTTPS routing using Route 53 + ACM.
-
-Files are securely uploaded to Amazon S3 using IAM Roles for Service Accounts (IRSA) for pod-to-AWS authentication.
-
-PostgreSQL (Amazon RDS) is used for metadata storage.
-
-Redis OSS (Amazon ElastiCache) is used for caching and performance optimization.
-
-Docker images are stored in private Amazon ECR repositories.
-
-CI/CD pipelines are automated using Jenkins with security scanning and quality validation.
+Prometheus
+   │
+   ▼
+Alertmanager
+   │
+   ▼
+Email Notifications
+```
 
 ---
 
 # ☁️ AWS Services Used
 
 * Amazon EKS
-* Amazon ECR
-* Amazon S3
-* Amazon CloudFront
-* Amazon Route 53
-* AWS Certificate Manager (ACM)
+* Amazon VPC
+* Amazon EC2
 * Amazon RDS PostgreSQL
-* Amazon ElastiCache Redis
-* IAM / IRSA
+* Amazon ECR
+* Amazon Route53
+* AWS Certificate Manager (ACM)
+* AWS Secrets Manager
 * Application Load Balancer (ALB)
+* IAM Roles for Service Accounts (IRSA)
+* CloudWatch
 
 ---
 
 # ☸️ Kubernetes Features
 
-* Amazon EKS cluster deployment
-* Kubernetes Deployments & Services
+* Amazon EKS Cluster
+* Namespace Isolation
+* Deployments
+* Services
+* Ingress Resources
 * AWS Load Balancer Controller
-* Kubernetes Ingress with HTTPS
-* IRSA (IAM Roles for Service Accounts)
-* Internal Kubernetes service discovery
-* Secure pod-to-AWS communication
-* Multi-replica backend deployment
-* Private ECR image pulls
-* ClusterIP internal networking
+* External Secrets Operator
+* Horizontal Pod Autoscaler (HPA)
+* Metrics Server
+* Prometheus Monitoring
+* Grafana Dashboards
+* Alertmanager Notifications
+* ConfigMaps
+* Secrets
+* Rolling Updates
+* Self-Healing Pods
 
 ---
 
-# 🌐 Application Flow
+# 🔄 GitOps Workflow
 
-## Upload Flow
+ArgoCD continuously monitors the Git repository and automatically synchronizes changes to the Kubernetes cluster.
 
-Frontend
-↓
-Backend API
-↓
-Amazon S3 (Private)
-
----
-
-## Download Flow
-
-Frontend
-↓
-Backend API
-↓
-Generate Pre-Signed URL
-↓
-Amazon S3
-↓
-User Download
-
----
-
-# 🏗️ Production Architecture
-
-Users
-↓
-CloudFront + S3 Frontend
-↓
-api.maheshmaharana.online
-↓
-ALB Ingress
-↓
+```text
+Developer
+    │
+    ▼
+GitHub Repository
+    │
+    ▼
+ArgoCD
+    │
+    ▼
 Amazon EKS
-↓
-Backend Pods
-↓
-RDS + Redis + S3
+```
 
----
+Benefits:
 
-# 🔥 Features
-
-* Secure file upload to Amazon S3
-* Secure file download using pre-signed URLs
-* Private S3 bucket architecture
-* CloudFront CDN delivery
-* HTTPS enabled across frontend and backend
-* Redis caching for performance optimization
-* Dockerized backend deployment
-* Kubernetes-based backend orchestration
-* Automated backend CI/CD pipeline
-* AWS ALB Ingress Controller
-* IRSA-based AWS authentication
-* Internal Kubernetes networking
-* Private ECR image management
-* Custom domain and DNS routing using Route 53
-
----
-
-# ⚙️ DevSecOps Pipeline
-
-## Backend CI/CD Flow
-
-GitHub Push
-↓
-Jenkins Pipeline Trigger
-↓
-Install Dependencies
-↓
-Run Tests + Coverage
-↓
-SonarQube Code Analysis
-↓
-Quality Gate Validation
-↓
-Trivy Security Scan
-↓
-Docker Build
-↓
-Push Image to Amazon ECR
-↓
-Deploy to Amazon EKS
+* Automated deployments
+* Version-controlled infrastructure
+* Self-healing applications
+* Drift detection
+* Easy rollback
 
 ---
 
 # 🔐 Security Implementation
 
-* Private S3 bucket architecture
-* Pre-signed URL based secure downloads
-* IRSA-based pod authentication
-* IAM-based access control
-* HTTPS enforced using ACM
-* Private ECR image repositories
-* Kubernetes internal service networking
-* Security scanning using Trivy
-* SonarQube Quality Gate validation
+### Secrets Management
+
+Sensitive information is stored in:
+
+* AWS Secrets Manager
+* External Secrets Operator
+* Kubernetes Secrets
+
+Secrets include:
+
+* PostgreSQL credentials
+* Redis credentials
+* SMTP credentials
+* Application secrets
+
+### SSL/TLS
+
+* AWS Certificate Manager
+* HTTPS enabled
+* Route53 DNS management
+
+### Access Control
+
+* IAM Roles
+* Kubernetes RBAC
+* Least Privilege Principle
 
 ---
 
-# 🛠️ Tech Stack
+# 📊 Monitoring & Observability
+
+The platform includes a complete monitoring and alerting stack.
+
+## Components
+
+* Prometheus
+* Grafana
+* Alertmanager
+* Node Exporter
+* Kube State Metrics
+* Metrics Server
+
+---
+
+## Metrics Collected
+
+### Infrastructure Metrics
+
+* CPU Usage
+* Memory Usage
+* Disk Usage
+* Network Usage
+* Node Health
+
+### Kubernetes Metrics
+
+* Pod Status
+* Deployment Health
+* Restart Counts
+* Resource Requests
+* Resource Limits
+
+### Application Metrics
+
+* Backend Availability
+* Service Health
+* API Response Metrics
+
+---
+
+# 🚨 Alerting System
+
+Alertmanager is configured with Gmail SMTP integration.
+
+Email notifications are automatically sent for:
+
+### Critical Alerts
+
+* High CPU Usage
+* High Memory Usage
+* Node Down
+* Backend Service Down
+
+### Warning Alerts
+
+* Pod CrashLooping
+* Deployment Replica Mismatch
+* Pod Not Ready
+
+---
+
+# 📈 Horizontal Pod Autoscaler (HPA)
+
+The backend application automatically scales based on CPU utilization.
+
+### Configuration
+
+* Minimum Replicas: 2
+* Maximum Replicas: 5
+* Target CPU Utilization: 70%
+
+### Scaling Flow
+
+```text
+High CPU Usage
+       │
+       ▼
+Metrics Server
+       │
+       ▼
+HPA
+       │
+       ▼
+Scale Pods Automatically
+```
+
+---
+
+# 📦 Application Flow
+
+## Upload Flow
+
+```text
+User
+ │
+ ▼
+Frontend
+ │
+ ▼
+Backend API
+ │
+ ▼
+PostgreSQL Metadata
+```
+
+---
+
+## Download Flow
+
+```text
+User
+ │
+ ▼
+Frontend
+ │
+ ▼
+Backend API
+ │
+ ▼
+Database Lookup
+ │
+ ▼
+Return File
+```
+
+---
+
+# 🛠 Tech Stack
+
+## Frontend
+
+* React.js
+* JavaScript
+* HTML
+* CSS
 
 ## Backend
 
 * Node.js
 * Express.js
-* PostgreSQL
+
+## Database
+
+* PostgreSQL (Amazon RDS)
+
+## Cache
+
 * Redis
 
-## Frontend
+## Containerization
 
-* React.js
+* Docker
 
-## DevOps & Infrastructure
+## Orchestration
 
 * Kubernetes
-* Amazon EKS
-* Docker
-* Jenkins
-* SonarQube
-* Trivy
-* AWS Load Balancer Controller
-* AWS Cloud Services
 
----
+## Cloud
 
-# 🚀 Deployment Architecture
+* AWS
 
-## Frontend
+## Infrastructure as Code
 
-* React application hosted on Amazon S3
-* Delivered globally using CloudFront CDN
-* HTTPS enabled using ACM
+* Terraform
 
-## Backend
+## GitOps
 
-* Containerized Node.js application deployed on Amazon EKS
-* Kubernetes Deployments and Services
-* AWS Load Balancer Controller with Ingress
-* HTTPS routing using ACM + Route 53
-* Private image storage using Amazon ECR
-* Secure AWS access using IRSA
+* ArgoCD
+
+## Monitoring
+
+* Prometheus
+* Grafana
+* Alertmanager
 
 ---
 
 # 📂 Project Structure
 
-```bash
-File_storage_aws_version/
+```text
+.
+├── terraform/
+│   ├── modules/
+│   ├── environments/
+│   └── main.tf
+│
+├── gitops/
+│   ├── argocd/
+│   ├── frontend/
+│   ├── backend/
+│   ├── monitoring/
+│   └── external-secrets/
+│
+├── frontend/
 │
 ├── backend/
-├── frontend/
-├── k8s/
-│   ├── deployment.yaml
-│   ├── service.yaml
-│   ├── ingress.yaml
-│   ├── serviceaccount.yaml
-│   └── secrets.yaml
 │
-├── screenshots/
-├── dump.sql
-├── README.md
-└── eks.config.yaml
+├── docs/
+│   └── screenshots/
+│
+└── README.md
 ```
 
-# ⚙️ Setup Instructions
+---
 
-## 1. Clone Repository
+# 🚀 Deployment Process
+
+## 1. Provision Infrastructure
 
 ```bash
-git clone https://github.com/maheshkumar198/File_storage_aws_version
-
-cd File_storage_aws_version
+terraform init
+terraform plan
+terraform apply
 ```
 
 ---
 
-## 2. Backend Setup
+## 2. Configure EKS
 
 ```bash
-cd backend
-
-npm install
-
-cp .env.example .env
-
-npm start
+aws eks update-kubeconfig \
+  --region ap-south-1 \
+  --name <cluster-name>
 ```
 
 ---
 
-## 3. Frontend Setup
+## 3. Install ArgoCD
 
 ```bash
-cd frontend
+kubectl create namespace argocd
 
-npm install
-
-npm start
+kubectl apply \
+-f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml \
+-n argocd
 ```
 
 ---
 
-## 4. Docker Build
+## 4. Deploy Applications
 
 ```bash
-docker build -t backend ./backend
+kubectl apply -f applications/
 ```
 
----
+ArgoCD automatically deploys:
 
-## 5. Push Image to ECR
-
-```bash
-docker tag backend:latest <ECR_URI>
-
-docker push <ECR_URI>
-```
+* Backend
+* Monitoring Stack
+* External Secrets
+* Ingress
 
 ---
 
-## 6. Deploy to Kubernetes
+# 📸 Screenshots
 
-```bash
-kubectl apply -f k8s/
-```
+## Architecture Diagram
 
----
+*Add architecture screenshot here*
 
-# 🗄️ Database Setup (PostgreSQL)
+## ArgoCD Dashboard
 
-Restore database using:
+*Add screenshot here*
 
-```bash
-psql -U postgres -d filestorage -f dump.sql
-```
+## Grafana Dashboard
 
+*Add screenshot here*
 
+## Prometheus Alerts
 
----
+*Add screenshot here*
 
-# 📌 Current Improvements in Progress
+## Alert Email Notification
 
-* Infrastructure as Code using Terraform
-* GitHub Actions / ArgoCD CI/CD
-* Monitoring using Prometheus + Grafana + Loki
-* Kubernetes autoscaling with HPA and Karpenter
-* Direct S3 uploads using pre-signed URLs
-* Web Application Firewall (WAF)
+*Add screenshot here*
 
+## HPA Scaling
+
+*Add screenshot here*
 
 ---
 
-# 🔗 LinkedIn Project Post
+# 🎯 Key DevOps Concepts Demonstrated
 
-https://www.linkedin.com/posts/mahesh-maharana-160989291_aws-kubernetes-eks-activity-7459769135259070466-hC3E?utm_source=share&utm_medium=member_desktop&rcm=ACoAAEbNQZgBL00engJLb_Uv5PuXfwlOL-g_dMs
+* Infrastructure as Code (Terraform)
+* GitOps (ArgoCD)
+* Kubernetes Operations
+* Cloud Networking
+* Secrets Management
+* Monitoring & Alerting
+* Autoscaling
+* Containerization
+* CI/CD Practices
+* Production Architecture Design
+
+---
+
+# 🚀 Future Enhancements
+
+* Loki Log Aggregation
+* Karpenter Auto Node Scaling
 
 ---
 
 # 👨‍💻 Author
 
-Mahesh Maharana
+**Mahesh Maharana**
 
-System Administrator → Cloud & DevOps Engineer
+Cloud & DevOps Engineer
 
+* LinkedIn: https://linkedin.com
+* GitHub: https://github.com/maheshkumar198
 
+---
+
+⭐ If you found this project useful, consider giving it a star.
