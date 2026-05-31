@@ -534,7 +534,8 @@ kubectl apply -f applications/
 
 ## Architecture Diagram
 
-*Add Screenshot*
+<img width="1900" height="809" alt="image" src="https://github.com/user-attachments/assets/5c403a6e-f4a7-49b4-ab75-75b6270bdffe" />
+
 
 ## ArgoCD Dashboard
 
