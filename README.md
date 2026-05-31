@@ -534,7 +534,8 @@ kubectl apply -f applications/
 
 ## Architecture Diagram
 
-<img width="1900" height="809" alt="image" src="https://github.com/user-attachments/assets/5c403a6e-f4a7-49b4-ab75-75b6270bdffe" />
+<img width="1536" height="1024" alt="ChatGPT Image May 31, 2026, 11_57_05 PM" src="https://github.com/user-attachments/assets/22ddeb1b-12fc-4777-ae4e-0e71bd6d8936" />
+
 
 
 ## ArgoCD Dashboard
