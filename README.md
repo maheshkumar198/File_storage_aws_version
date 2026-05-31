@@ -1,99 +1,146 @@
-# 🚀 Cloud-Native File Storage Platform (AWS + Kubernetes + DevOps)
+# 🚀 Cloud-Native File Storage Platform
 
-A production-style cloud-native file storage platform built using AWS, Kubernetes, Terraform, GitOps, and modern DevOps practices.
+### AWS • Kubernetes • Terraform • GitOps • CI/CD • Monitoring
 
-This project demonstrates end-to-end infrastructure provisioning, application deployment, GitOps workflows, monitoring, alerting, autoscaling, secrets management, and cloud-native operations.
+A production-style cloud-native file storage platform built on AWS using modern DevOps practices.
+
+This project demonstrates Infrastructure as Code (Terraform), Kubernetes orchestration, GitOps deployment with ArgoCD, CI/CD with GitHub Actions, cloud-native monitoring, autoscaling, secrets management, and production-grade AWS services.
 
 ---
 
-# 🏗 Architecture Overview
+# 🌐 Live Application
 
-The application is deployed on Amazon EKS and follows GitOps principles using ArgoCD.
+### Frontend
+
+https://maheshmaharana.online
+
+### Backend API
+
+https://api.maheshmaharana.online
+
+---
+
+# 🏗️ Architecture Overview
+
+## Frontend Architecture
 
 ```text
-Users
-   │
-   ▼
+User
+ │
+ ▼
 Route53
-   │
-   ▼
-AWS ALB Ingress Controller
-   │
-   ▼
-EKS Cluster
-   ├── Frontend Pods
-   ├── Backend Pods
-   ├── HPA
-   ├── Metrics Server
-   ├── Prometheus
-   ├── Grafana
-   ├── Alertmanager
-   └── External Secrets Operator
-          │
-          ▼
-AWS Secrets Manager
+ │
+ ▼
+CloudFront
+ │
+ ▼
+Amazon S3
+ │
+ ▼
+React Frontend
+```
 
-Backend Pods
-   ├── PostgreSQL (Amazon RDS)
-   └── Redis Cache
+### Benefits
 
-Prometheus
-   │
-   ▼
-Alertmanager
-   │
-   ▼
-Email Notifications
+* Global CDN Delivery
+* HTTPS Enabled
+* High Availability
+* Low Latency
+* Cost Optimized
+
+---
+
+## Backend Architecture
+
+```text
+User
+ │
+ ▼
+Route53
+ │
+ ▼
+Application Load Balancer
+ │
+ ▼
+AWS Load Balancer Controller
+ │
+ ▼
+Amazon EKS
+ │
+ ├── Backend Pods
+ │ ├── Deployment
+ │ ├── Service
+ │ └── HPA
+ │
+ ├── ArgoCD
+ │
+ ├── External Secrets Operator
+ │
+ ├── Prometheus
+ │
+ ├── Grafana
+ │
+ └── Alertmanager
+ │
+ ▼
+RDS PostgreSQL
+ │
+ ▼
+Redis
 ```
 
 ---
 
-# ☁️ AWS Services Used
+# ⚙️ CI/CD Pipeline
 
-* Amazon EKS
-* Amazon VPC
-* Amazon EC2
-* Amazon RDS PostgreSQL
-* Amazon ECR
-* Amazon Route53
-* AWS Certificate Manager (ACM)
-* AWS Secrets Manager
-* Application Load Balancer (ALB)
-* IAM Roles for Service Accounts (IRSA)
-* CloudWatch
-
----
-
-# ☸️ Kubernetes Features
-
-* Amazon EKS Cluster
-* Namespace Isolation
-* Deployments
-* Services
-* Ingress Resources
-* AWS Load Balancer Controller
-* External Secrets Operator
-* Horizontal Pod Autoscaler (HPA)
-* Metrics Server
-* Prometheus Monitoring
-* Grafana Dashboards
-* Alertmanager Notifications
-* ConfigMaps
-* Secrets
-* Rolling Updates
-* Self-Healing Pods
-
----
-
-# 🔄 GitOps Workflow
-
-ArgoCD continuously monitors the Git repository and automatically synchronizes changes to the Kubernetes cluster.
+## Frontend Pipeline
 
 ```text
 Developer
     │
     ▼
-GitHub Repository
+GitHub
+    │
+    ▼
+GitHub Actions
+    │
+    ▼
+React Build
+    │
+    ▼
+Upload to Amazon S3
+    │
+    ▼
+CloudFront Cache Invalidation
+    │
+    ▼
+Production
+```
+
+---
+
+## Backend Pipeline
+
+```text
+Developer
+    │
+    ▼
+GitHub
+    │
+    ▼
+GitHub Actions
+    │
+    ▼
+Docker Build
+    │
+    ▼
+Amazon ECR
+    │
+    ▼
+Update GitOps Manifest
+    │
+    ▼
+Git Push
     │
     ▼
 ArgoCD
@@ -102,40 +149,119 @@ ArgoCD
 Amazon EKS
 ```
 
-Benefits:
+---
 
-* Automated deployments
-* Version-controlled infrastructure
-* Self-healing applications
-* Drift detection
-* Easy rollback
+# 🔄 GitOps Workflow
+
+ArgoCD continuously watches Git repositories and synchronizes changes automatically.
+
+```text
+GitHub
+   │
+   ▼
+ArgoCD
+   │
+   ▼
+Amazon EKS
+```
+
+### Features
+
+* Automated Deployments
+* Self-Healing
+* Drift Detection
+* Rollback Support
+* Version Control
+
+---
+
+# ☁️ AWS Services Used
+
+### Compute
+
+* Amazon EKS
+* Amazon EC2
+
+### Storage
+
+* Amazon S3
+
+### Database
+
+* Amazon RDS PostgreSQL
+* Redis
+
+### Networking
+
+* Amazon VPC
+* Route53
+* CloudFront
+* Application Load Balancer
+
+### Security
+
+* AWS Certificate Manager
+* AWS Secrets Manager
+* IAM
+
+### Containers
+
+* Amazon ECR
+
+### Monitoring
+
+* CloudWatch
+
+---
+
+# ☸️ Kubernetes Features
+
+* Deployments
+* Services
+* Ingress
+* Namespaces
+* ConfigMaps
+* Secrets
+* Horizontal Pod Autoscaler
+* Metrics Server
+* AWS Load Balancer Controller
+* External Secrets Operator
+* Prometheus
+* Grafana
+* Alertmanager
+* Self-Healing
+* Rolling Updates
 
 ---
 
 # 🔐 Security Implementation
 
-### Secrets Management
+## Secrets Management
 
-Sensitive information is stored in:
+Secrets are stored in:
 
 * AWS Secrets Manager
-* External Secrets Operator
 * Kubernetes Secrets
+* External Secrets Operator
 
-Secrets include:
+Managed Secrets:
 
-* PostgreSQL credentials
-* Redis credentials
-* SMTP credentials
-* Application secrets
+* Database Credentials
+* Redis Credentials
+* SMTP Credentials
+* Application Secrets
 
-### SSL/TLS
+---
 
-* AWS Certificate Manager
-* HTTPS enabled
-* Route53 DNS management
+## SSL/TLS
 
-### Access Control
+* AWS ACM Certificates
+* HTTPS Enabled
+* Secure API Communication
+
+---
+
+## Access Control
 
 * IAM Roles
 * Kubernetes RBAC
@@ -145,89 +271,102 @@ Secrets include:
 
 # 📊 Monitoring & Observability
 
-The platform includes a complete monitoring and alerting stack.
+A complete monitoring stack is deployed using kube-prometheus-stack.
 
 ## Components
 
-* Prometheus
-* Grafana
-* Alertmanager
-* Node Exporter
-* Kube State Metrics
-* Metrics Server
+### Prometheus
 
----
+Collects metrics from:
 
-## Metrics Collected
+* Nodes
+* Pods
+* Services
+* Kubernetes Components
 
-### Infrastructure Metrics
+### Grafana
 
-* CPU Usage
-* Memory Usage
-* Disk Usage
-* Network Usage
-* Node Health
+Provides dashboards for:
 
-### Kubernetes Metrics
+* Cluster Monitoring
+* Resource Utilization
+* Application Metrics
+* Infrastructure Health
 
-* Pod Status
-* Deployment Health
-* Restart Counts
-* Resource Requests
-* Resource Limits
+### Alertmanager
 
-### Application Metrics
+Routes alerts through:
 
-* Backend Availability
-* Service Health
-* API Response Metrics
+* Email Notifications
+
+### Node Exporter
+
+Provides:
+
+* CPU Metrics
+* Memory Metrics
+* Disk Metrics
+* Network Metrics
+
+### Kube State Metrics
+
+Provides Kubernetes object metrics.
+
+### Metrics Server
+
+Provides metrics required by HPA.
 
 ---
 
 # 🚨 Alerting System
 
-Alertmanager is configured with Gmail SMTP integration.
+Alertmanager is integrated with Gmail SMTP.
 
-Email notifications are automatically sent for:
+## Configured Alerts
 
-### Critical Alerts
+### Infrastructure Alerts
 
 * High CPU Usage
 * High Memory Usage
 * Node Down
-* Backend Service Down
 
-### Warning Alerts
+### Kubernetes Alerts
 
 * Pod CrashLooping
-* Deployment Replica Mismatch
 * Pod Not Ready
+* Deployment Replica Mismatch
+
+### Application Alerts
+
+* Backend Service Down
 
 ---
 
-# 📈 Horizontal Pod Autoscaler (HPA)
+# 📈 Horizontal Pod Autoscaling
 
-The backend application automatically scales based on CPU utilization.
+Backend services scale automatically based on CPU utilization.
 
 ### Configuration
 
-* Minimum Replicas: 2
-* Maximum Replicas: 5
-* Target CPU Utilization: 70%
+```yaml
+minReplicas: 2
+maxReplicas: 5
+targetCPUUtilizationPercentage: 70
+```
 
 ### Scaling Flow
 
 ```text
-High CPU Usage
-       │
-       ▼
+CPU Usage Increases
+        │
+        ▼
 Metrics Server
-       │
-       ▼
+        │
+        ▼
 HPA
-       │
-       ▼
-Scale Pods Automatically
+        │
+        ▼
+Scale Backend Pods
 ```
 
 ---
@@ -240,13 +379,16 @@ Scale Pods Automatically
 User
  │
  ▼
-Frontend
+React Frontend
  │
  ▼
 Backend API
  │
  ▼
 PostgreSQL Metadata
+ │
+ ▼
+Success Response
 ```
 
 ---
@@ -257,7 +399,7 @@ PostgreSQL Metadata
 User
  │
  ▼
-Frontend
+React Frontend
  │
  ▼
 Backend API
@@ -266,12 +408,12 @@ Backend API
 Database Lookup
  │
  ▼
-Return File
+File Response
 ```
 
 ---
 
-# 🛠 Tech Stack
+# 🛠️ Tech Stack
 
 ## Frontend
 
@@ -287,23 +429,19 @@ Return File
 
 ## Database
 
-* PostgreSQL (Amazon RDS)
+* PostgreSQL
 
 ## Cache
 
 * Redis
 
-## Containerization
+## Containers
 
 * Docker
 
 ## Orchestration
 
 * Kubernetes
-
-## Cloud
-
-* AWS
 
 ## Infrastructure as Code
 
@@ -313,11 +451,19 @@ Return File
 
 * ArgoCD
 
+## CI/CD
+
+* GitHub Actions
+
 ## Monitoring
 
 * Prometheus
 * Grafana
 * Alertmanager
+
+## Cloud
+
+* AWS
 
 ---
 
@@ -331,15 +477,18 @@ Return File
 │   └── main.tf
 │
 ├── gitops/
-│   ├── argocd/
-│   ├── frontend/
+│   ├── applications/
 │   ├── backend/
 │   ├── monitoring/
-│   └── external-secrets/
+│   ├── external-secrets/
+│   └── ingress/
 │
 ├── frontend/
 │
 ├── backend/
+│
+├── .github/
+│   └── workflows/
 │
 ├── docs/
 │   └── screenshots/
@@ -349,9 +498,9 @@ Return File
 
 ---
 
-# 🚀 Deployment Process
+# 🚀 Deployment Steps
 
-## 1. Provision Infrastructure
+## Provision Infrastructure
 
 ```bash
 terraform init
@@ -361,7 +510,7 @@ terraform apply
 
 ---
 
-## 2. Configure EKS
+## Configure EKS
 
 ```bash
 aws eks update-kubeconfig \
@@ -371,7 +520,7 @@ aws eks update-kubeconfig \
 
 ---
 
-## 3. Install ArgoCD
+## Install ArgoCD
 
 ```bash
 kubectl create namespace argocd
@@ -383,18 +532,11 @@ kubectl apply \
 
 ---
 
-## 4. Deploy Applications
+## Deploy Applications
 
 ```bash
 kubectl apply -f applications/
 ```
-
-ArgoCD automatically deploys:
-
-* Backend
-* Monitoring Stack
-* External Secrets
-* Ingress
 
 ---
 
@@ -402,61 +544,63 @@ ArgoCD automatically deploys:
 
 ## Architecture Diagram
 
-*Add architecture screenshot here*
+*Add Screenshot*
 
 ## ArgoCD Dashboard
 
-*Add screenshot here*
+*Add Screenshot*
 
 ## Grafana Dashboard
 
-*Add screenshot here*
+*Add Screenshot*
 
 ## Prometheus Alerts
 
-*Add screenshot here*
+*Add Screenshot*
 
-## Alert Email Notification
+## Alertmanager Email Notification
 
-*Add screenshot here*
+*Add Screenshot*
 
 ## HPA Scaling
 
-*Add screenshot here*
+*Add Screenshot*
 
 ---
 
-# 🎯 Key DevOps Concepts Demonstrated
+# 🎯 DevOps Concepts Demonstrated
 
-* Infrastructure as Code (Terraform)
-* GitOps (ArgoCD)
+* Infrastructure as Code
 * Kubernetes Operations
+* GitOps
+* CI/CD
 * Cloud Networking
-* Secrets Management
 * Monitoring & Alerting
 * Autoscaling
+* Secrets Management
 * Containerization
-* CI/CD Practices
-* Production Architecture Design
+* Production Deployments
+* Cloud Security
 
 ---
 
 # 🚀 Future Enhancements
 
 * Loki Log Aggregation
-* Karpenter Auto Node Scaling
+* Karpenter
 
 ---
 
 # 👨‍💻 Author
 
-**Mahesh Maharana**
+### Mahesh Maharana
 
 Cloud & DevOps Engineer
 
-* LinkedIn: https://linkedin.com
-* GitHub: https://github.com/maheshkumar198
+GitHub: https://github.com/maheshkumar198
+
+LinkedIn: https://www.linkedin.com/
 
 ---
 
-⭐ If you found this project useful, consider giving it a star.
+⭐ If you found this project useful, please consider giving it a star.
