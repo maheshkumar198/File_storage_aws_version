@@ -10,6 +10,7 @@ This project demonstrates Infrastructure as Code (Terraform), Kubernetes orchest
 ---
 
 # 🏗️ Architecture Overview
+<img width="1536" height="1024" alt="ChatGPT Image May 31, 2026, 11_57_05 PM" src="https://github.com/user-attachments/assets/22ddeb1b-12fc-4777-ae4e-0e71bd6d8936" />
 
 ## Frontend Architecture
 
@@ -467,11 +468,7 @@ File Response
 │   └── main.tf
 │
 ├── gitops/
-│   ├── applications/
-│   ├── backend/
-│   ├── monitoring/
-│   ├── external-secrets/
-│   └── ingress/
+│   ├── app/
 │
 ├── frontend/
 │
