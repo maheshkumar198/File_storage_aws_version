@@ -21,3 +21,4 @@ variable "oidc_provider_url" {
 variable "policy_json" {
   type = string
 }
+

@@ -22,7 +22,7 @@ spec:
 
       containers:
         - name: backend
-          image: 905179308072.dkr.ecr.ap-south-1.amazonaws.com/file-storage-backend:latest
+          image: 905179308072.dkr.ecr.ap-south-1.amazonaws.com/file-storage-backend@sha256:7e3c609f763edaa0cf9abe93a74bd8aefd80e89f73e6f3c966f2829275422f17
 
           ports:
             - containerPort: 3000
@@ -35,7 +35,7 @@ spec:
               value: "ap-south-1"
 
             - name: S3_BUCKET
-              value: "file-storage-dev-bucket"
+              value: "maheshkumar1981"
 
           envFrom:
             - secretRef:
